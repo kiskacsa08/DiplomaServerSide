@@ -1,0 +1,8 @@
+/src/cleaningdata/
+/build/
+/dist/
+/*.txt
+/*.csv
+/*.grab
+/Rubbish
+/build.xml
