@@ -3,12 +3,15 @@ package diplomacollectdata;
 import cleaningdata.DataCleaner;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Timer;
+import org.rosuda.REngine.REXPMismatchException;
+import org.rosuda.REngine.REngineException;
 
 /**
  *
@@ -139,7 +142,9 @@ public class MainWindow extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(btnExit, javax.swing.GroupLayout.Alignment.LEADING))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addComponent(btnExit)
+                        .addGap(13, 13, 13)))
                 .addContainerGap(47, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -189,8 +194,10 @@ public class MainWindow extends javax.swing.JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                DownloadOdds odds = new DownloadOdds();
-                System.out.println("timer");
+//                DownloadOdds odds = new DownloadOdds();
+                System.out.println("odds");
+                Classification.Clean();
+                System.out.println("cleaned");
 //                DataCleaner dc = new DataCleaner();
 //                try {
 //                    dc.cleanData();

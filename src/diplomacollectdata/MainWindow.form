@@ -47,7 +47,10 @@
                           <Component id="jComboBox1" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
-                  <Component id="btnExit" alignment="0" min="-2" max="-2" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="btnExit" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="13" max="-2" attributes="0"/>
+                  </Group>
               </Group>
               <EmptySpace pref="47" max="32767" attributes="0"/>
           </Group>
