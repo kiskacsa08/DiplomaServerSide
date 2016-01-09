@@ -6,4 +6,6 @@
 /*.grab
 /Rubbish
 /.debris
+/*.log
 /build.xml
+/nbproject/private/
