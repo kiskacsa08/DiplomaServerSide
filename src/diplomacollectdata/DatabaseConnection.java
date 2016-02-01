@@ -15,9 +15,9 @@ import java.util.logging.Logger;
 
 //konstruktorban adatbázis kapcsolódáshoz szükséges adatok beállítása
 public class DatabaseConnection {
-    private final String host = "jdbc:derby://localhost:1527/OddsDB";
-    private final String user = "diploma";
-    private final String pass = "diplomamunka";
+    private final String host = "jdbc:derby://localhost:1527/DiplomaOddsDatabase";
+    private final String user = "kiskacsa08";
+    private final String pass = "kiskacsa";
     private Connection con;
     private Statement stmt;
     private ResultSet rs;
@@ -48,18 +48,20 @@ public class DatabaseConnection {
     public void closeConnection() throws SQLException{
         con.close();
         stmt.close();
-        rs.close();
+        if (rs != null) {
+            rs.close();
+        }
     }
     
     //egy adott táblából az összes rekord törlése
     public void deleteAllRows(String table) throws SQLException{
-        String SQL = "DELETE FROM DIPLOMA." + table;
+        String SQL = "DELETE FROM KISKACSA08." + table;
         stmt.execute(SQL);
     }
     
     //egy adott táblából megadott feltétel szerinti rekordok törlése
     public void deleteSpecificRows(String table, String condition) throws SQLException{
-        String SQL = "DELETE FROM DIPLOMA." + table + " WHERE " + condition;
+        String SQL = "DELETE FROM KISKACSA08." + table + " WHERE " + condition;
         System.out.println(SQL);
         stmt.execute(SQL);
     }
