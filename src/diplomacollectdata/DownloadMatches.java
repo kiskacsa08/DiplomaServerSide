@@ -22,7 +22,7 @@ import org.jsoup.select.Elements;
  */
 public class DownloadMatches {
     
-    //letöltés indítása, adatok kinyerése, kiírás adatbázisba
+    //letöltés indítása, adatok kinyerése, kiírás adatbázisba.
     public static void startDownload() throws SQLException, IOException, ParseException{
         ResultSet rs;
         DatabaseConnection dc = new DatabaseConnection();
