@@ -2,8 +2,13 @@ package diplomacollectdata;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.Timer;
 
 /**
@@ -135,9 +140,7 @@ public class MainWindow extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addComponent(btnExit)
-                        .addGap(13, 13, 13)))
+                    .addComponent(btnExit, javax.swing.GroupLayout.Alignment.LEADING))
                 .addContainerGap(47, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -174,31 +177,20 @@ public class MainWindow extends javax.swing.JFrame {
 
     //Indítás gomb eseménykezelője
     private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartActionPerformed
-//        matchTimer = new Timer((int)intervals.get(jComboBox2.getSelectedItem().toString()), (ActionEvent e) -> {
-//            DownloadMatches dm = new DownloadMatches();
-//        });
-//        matchTimer.setInitialDelay(0);
-        System.out.println("Első");
-//        oddsTimer = new Timer((int)intervals.get(jComboBox1.getSelectedItem().toString()), (ActionEvent e) -> {
-//            DownloadOdds odds = new DownloadOdds();
-//            System.out.println("timer");
-//        });
-        oddsTimer = new Timer((int)intervals.get(jComboBox1.getSelectedItem().toString()), new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-//                DownloadOdds odds = new DownloadOdds();
-                System.out.println("odds");
-                Classification.Clean();
-                System.out.println("cleaned");
-//                DataCleaner dc = new DataCleaner();
-//                try {
-//                    dc.cleanData();
-//                } catch (SQLException ex) {
-//                    Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-//                }
-//                System.out.println("Cleaned");
+        matchTimer = new Timer((int)intervals.get(jComboBox2.getSelectedItem().toString()), (ActionEvent e) -> {
+            try {
+                DownloadMatches.startDownload();
+            } catch (SQLException | IOException | ParseException ex) {
+                Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
             }
+        });
+        matchTimer.setInitialDelay(0);
+        System.out.println("Első");
+        oddsTimer = new Timer((int)intervals.get(jComboBox1.getSelectedItem().toString()), (ActionEvent e) -> {
+            DownloadOdds odds = new DownloadOdds();
+            System.out.println("odds");
+            Classification.Clean();
+            System.out.println("cleaned");
         });
         oddsTimer.setInitialDelay(0);
         System.out.println("Második");
@@ -207,15 +199,15 @@ public class MainWindow extends javax.swing.JFrame {
         btnStop.setEnabled(true);
         btnStart.setEnabled(false);
         
-//        matchTimer.start();
+        matchTimer.start();
         oddsTimer.start();
         System.out.println("Harmadik");
     }//GEN-LAST:event_btnStartActionPerformed
 
     //Megállítás gomb eseménykezelője
     private void btnStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStopActionPerformed
-//        matchTimer.stop();
-        oddsTimer.stop();
+        matchTimer.stop();
+//        oddsTimer.stop();
         
         btnStart.setEnabled(true);
         btnStop.setEnabled(false);
