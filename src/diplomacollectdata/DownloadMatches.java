@@ -12,6 +12,8 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -27,8 +29,9 @@ public class DownloadMatches {
         ResultSet rs;
         DatabaseConnection dc = new DatabaseConnection();
         String result;
-        String html;
+        String html = "";
         rs = dc.executeCommand("SELECT COUNT(*) FROM MATCHES");
+        Timestamp now = new Timestamp(new Date().getTime() - 2*60*60*1000);
         rs.first();
         int size = rs.getInt(1);
         System.out.println("Records: " + size);
@@ -41,12 +44,22 @@ public class DownloadMatches {
                 System.out.println("Round " + i);
                 html = downloadRound(i);
                 System.out.println("Downloaded " + html.length() + " characters.");
+                int match = 1;
                 for (int j = 1; j <= 10; j++) {
                     rs = dc.openConnection("MATCHES");
                     int homeTeamId = getHomeTeamId(html, i, j);
                     int awayTeamId = getAwayTeamId(html, i, j);
                     Timestamp matchDate = getDate(html, i, j);
-                    String matchResult = getResult(html, i, j);
+                    String matchResult;
+                    if (getMatchState(html, i, j) == 0) {
+                        System.out.println("van eredmeny");
+                        matchResult = getResult(html, i, match);
+                        match++;
+                    }
+                    else {
+                        System.out.println("nincs eredmeny");
+                        matchResult = "N/A";
+                    }
                     System.out.println("ID: " + id + "; H: " + homeTeamId + "; A: " + awayTeamId + "; Round: " + i + "; Date: " + matchDate + "; Result: " + matchResult);
                     rs.moveToInsertRow();
                     rs.updateInt("ID", id);
@@ -66,24 +79,43 @@ public class DownloadMatches {
         else {
             System.out.println("Two seasons");
             rs = dc.openConnection("MATCHES");
+            int downloadedRound = 0;
             while (rs.next()) {
                 result = rs.getString("RESULT");
-                System.out.println("New match, result: " + result);
-                if ("N/A".equals(result)) {
+                int homeTeam = rs.getInt("HOME_TEAM_ID");
+                int awayTeam = rs.getInt("AWAY_TEAM_ID");
+                System.out.println("New match, " + homeTeam + " - " + awayTeam + ", result: " + result);
+                int actRound = rs.getInt("ROUND");
+                Timestamp dbMatchDate = rs.getTimestamp("MATCH_DATE");
+                System.out.println("Round(double): " + downloadedRound);
+                System.out.println("Round(int): " + actRound);
+                if ("N/A".equals(result) && dbMatchDate.before(now)) {
                     System.out.println("No result");
-                    int round = rs.getInt("ROUND");
-                    html = downloadRound(round);
-                    System.out.println("Downloaded " + html.length() + " characters.");
-                    for (int i = 1; i <= 10; i++) {
-                        Timestamp matchDate = getDate(html, round, i);
-                        String matchResult = getResult(html, round, i);
-                        System.out.println("Date: " + matchDate + "; Result: " + matchResult);
-                        rs.updateString("RESULT", matchResult);
-                        rs.updateTimestamp("MATCH_DATE", matchDate);
-                        rs.updateRow();
-                        rs.next();
+                    int id = rs.getInt("ID");
+                    id = id/10;
+                    id = id*10;
+                    System.out.println("ID: " + id);
+                    if (actRound != downloadedRound) {
+                        html = downloadRound(actRound);
+                        downloadedRound = actRound;
                     }
-                    rs.previous();
+                    int pos = getMatchPosition(html, actRound, homeTeam);
+                    System.out.println("Downloaded " + html.length() + " characters.");
+                    System.out.println("Position: " + pos);
+                    Timestamp matchDate = getDate(html, actRound, pos);
+                    String matchResult;
+                    if (getMatchState(html, actRound, pos) == 0) {
+                        System.out.println("van eredmeny");
+                        matchResult = getResult(html, actRound, pos);
+                    }
+                    else {
+                        System.out.println("nincs eredmeny");
+                        matchResult = "N/A";
+                    }
+                    System.out.println("Date: " + matchDate + "; Result: " + matchResult);
+                    rs.updateString("RESULT", matchResult);
+                    rs.updateTimestamp("MATCH_DATE", matchDate);
+                    rs.updateRow();
                 }
             }
             rs.close();
@@ -156,7 +188,7 @@ public class DownloadMatches {
         results = doc.select("div.col_result");
         System.out.println("results size: " + results.size());
         System.out.println("match: " + match);
-        if (!results.isEmpty() && results.size() >= match) {
+        if (!results.isEmpty()) {
             result = results.get(match-1).text();
         }
         return result;
@@ -210,6 +242,55 @@ public class DownloadMatches {
         } while (!found && rs.next());
         rs.close();
         return id;
+    }
+    
+    private static String getTeamName(int id) throws SQLException{
+        String name = "";
+        DatabaseConnection dc = new DatabaseConnection();
+        ResultSet rs = dc.openConnection("TEAMS");
+        boolean found = false;
+        rs.first();
+        do {
+            if (id == rs.getInt("ID")) {
+                name = rs.getString("NAME");
+                found = true;
+            }
+        } while (!found && rs.next());
+        rs.close();
+        return name;
+    }
+    
+    private static int getMatchState(String html, int round, int match){
+        int state = 0;
+        Elements states;
+        String statesString;
+        Document doc;
+        doc = Jsoup.parse(html);
+        states = doc.select("div.event_line");
+        statesString = states.get(match-1).className();
+        System.out.println(statesString);
+        if (statesString.equals("event_line high")) {
+            state = 1;
+        }
+        return state;
+    }
+    
+    private static int getMatchPosition(String html, int round, int homeTeam) throws SQLException{
+        int pos = 1;
+        Elements homeTeams;
+        String statesString;
+        Document doc;
+        doc = Jsoup.parse(html);
+        String home = getTeamName(homeTeam);
+        homeTeams = doc.select("div.col2");
+        for (int i = 0; i < homeTeams.size(); i++) {
+            String homeTeamString = homeTeams.get(i).text();
+            if (homeTeamString.equals(home)) {
+                pos = i+1;
+                break;
+            }
+        }
+        return pos;
     }
     
     //adott forduló letöltése egy String-be

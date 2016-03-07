@@ -9,7 +9,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import javax.swing.Timer;
+import org.rosuda.JRI.Rengine;
 
 /**
  *
@@ -21,6 +25,9 @@ public class MainWindow extends javax.swing.JFrame {
     private final Map intervals;
     private Timer oddsTimer;
     private Timer matchTimer;
+//    private Rengine re;
+    private ScriptEngineManager manager;
+    private ScriptEngine engine;
     
     /**
      * Creates new form MainWindow
@@ -50,6 +57,11 @@ public class MainWindow extends javax.swing.JFrame {
         jComboBox2.addItem("5 óra");
         jComboBox2.addItem("10 óra");
         jComboBox2.addItem("1 nap");
+        
+        manager = new ScriptEngineManager();
+        engine = manager.getEngineByExtension("R");
+        
+//        re = new Rengine(new String[] {"--vanilla"}, false, null);
     }
 
     /**
@@ -186,13 +198,20 @@ public class MainWindow extends javax.swing.JFrame {
         });
         matchTimer.setInitialDelay(0);
         System.out.println("Első");
-        oddsTimer = new Timer((int)intervals.get(jComboBox1.getSelectedItem().toString()), (ActionEvent e) -> {
-            DownloadOdds odds = new DownloadOdds();
-            System.out.println("odds");
-            Classification.Clean();
-            System.out.println("cleaned");
-        });
-        oddsTimer.setInitialDelay(0);
+//        Classification.startR();
+//        oddsTimer = new Timer((int)intervals.get(jComboBox1.getSelectedItem().toString()), (ActionEvent e) -> {
+//            try {
+//                //            DownloadOdds odds = new DownloadOdds();
+//                System.out.println("odds");
+//                Classification.Clean(engine);
+//                System.out.println("cleaned");
+//                Classification.Classify(engine);
+//                System.out.println("classified");
+//            } catch (ScriptException ex) {
+//                Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//        });
+//        oddsTimer.setInitialDelay(0);
         System.out.println("Második");
         jComboBox1.setEnabled(false);
         jComboBox2.setEnabled(false);
@@ -200,8 +219,9 @@ public class MainWindow extends javax.swing.JFrame {
         btnStart.setEnabled(false);
         
         matchTimer.start();
-        oddsTimer.start();
+//        oddsTimer.start();
         System.out.println("Harmadik");
+//        Classification.stopR();
     }//GEN-LAST:event_btnStartActionPerformed
 
     //Megállítás gomb eseménykezelője

@@ -33,6 +33,7 @@ public class LoadWindow extends javax.swing.JFrame {
         jComboBox1.addItem("TEAMS");
         jComboBox1.addItem("ODDS");
         jComboBox1.addItem("CLEANEDDATA");
+        jComboBox1.addItem("PREDICTIONS");
         jLabel3.setText("");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
