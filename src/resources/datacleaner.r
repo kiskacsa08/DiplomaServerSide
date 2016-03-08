@@ -78,7 +78,7 @@ extractteams <- function(matches){
 # Load the database driver
 jdbcDriver <- JDBC(driverClass = "org.apache.derby.jdbc.ClientDriver", classPath = "./derbyclient.jar")
 # Connect to database
-jdbcConnection <- dbConnect(jdbcDriver, "jdbc:derby://localhost:1527/DiplomaOddsDatabase", "kiskacsa08", "kiskacsa")
+jdbcConnection <- dbConnect(jdbcDriver, "jdbc:derby://localhost:1527/DiplomaOddsDatabase", "diploma", "diploma")
 # Read odds data
 odds <- dbReadTable(jdbcConnection, "ODDS")
 # odds <- read.csv("odds.csv")
