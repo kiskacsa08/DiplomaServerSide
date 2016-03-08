@@ -246,7 +246,7 @@ classification <- function(data, data_type, distribution = NULL, n.trees = NULL,
     }
   }
   else if (FUN == "ctree" || FUN == "gbm") {
-    pred <- predict(model, data_test, type = "response")
+    pred <- predict(model, data_test, type = "response", n.trees = 1000)
   }
   else {
     pred <- predict(model, data_test, type = "class")
