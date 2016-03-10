@@ -1,7 +1,6 @@
 package diplomacollectdata;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -11,9 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 import javax.swing.Timer;
-import org.rosuda.JRI.Rengine;
 
 /**
  *

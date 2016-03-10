@@ -8,13 +8,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Paths;
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-import org.rosuda.JRI.*;
-import org.rosuda.REngine.*;
-import org.rosuda.jrs.*;
 
 /**
  *

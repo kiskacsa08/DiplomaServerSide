@@ -12,7 +12,6 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -31,7 +30,8 @@ public class DownloadMatches {
         String result;
         String html = "";
         rs = dc.executeCommand("SELECT COUNT(*) FROM MATCHES");
-        Timestamp now = new Timestamp(new Date().getTime() - 2*60*60*1000);
+        Timestamp oneWeekAfter = new Timestamp(new Date().getTime() + 7*24*60*60*1000);
+        
         rs.first();
         int size = rs.getInt(1);
         System.out.println("Records: " + size);
@@ -89,7 +89,7 @@ public class DownloadMatches {
                 Timestamp dbMatchDate = rs.getTimestamp("MATCH_DATE");
                 System.out.println("Round(double): " + downloadedRound);
                 System.out.println("Round(int): " + actRound);
-                if ("N/A".equals(result) && dbMatchDate.before(now)) {
+                if ("N/A".equals(result) && dbMatchDate.before(oneWeekAfter)) {
                     System.out.println("No result");
                     int id = rs.getInt("ID");
                     id = id/10;
@@ -104,13 +104,19 @@ public class DownloadMatches {
                     System.out.println("Position: " + pos);
                     Timestamp matchDate = getDate(html, actRound, pos);
                     String matchResult;
-                    if (getMatchState(html, actRound, pos) == 0) {
-                        System.out.println("van eredmeny");
-                        matchResult = getResult(html, actRound, pos);
-                    }
-                    else {
-                        System.out.println("nincs eredmeny");
-                        matchResult = "N/A";
+                    switch (getMatchState(html, actRound, pos)) {
+                        case 0:
+                            System.out.println("van eredmeny");
+                            matchResult = getResult(html, actRound, pos);
+                            break;
+                        case 2:
+                            System.out.println("live match");
+                            matchResult = "N/A";
+                            break;
+                        default:
+                            System.out.println("nincs eredmeny");
+                            matchResult = "N/A";
+                            break;
                     }
                     System.out.println("Date: " + matchDate + "; Result: " + matchResult);
                     rs.updateString("RESULT", matchResult);
@@ -271,6 +277,9 @@ public class DownloadMatches {
         System.out.println(statesString);
         if (statesString.equals("event_line high")) {
             state = 1;
+        }
+        if (statesString.equals("event_line live")) {
+            state = 2;
         }
         return state;
     }

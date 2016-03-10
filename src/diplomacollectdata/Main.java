@@ -76,7 +76,7 @@ public class Main {
         System.out.println("Második");
         
         matchTimer.start();
-        oddsTimer.start();
+//        oddsTimer.start();
         System.out.println("Harmadik");
     }
     
