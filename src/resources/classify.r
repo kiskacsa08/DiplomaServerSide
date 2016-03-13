@@ -295,4 +295,6 @@ df <- rbind(latestPred, df)
 dbWriteTable(jdbcConnection, "PREDICTIONS", df)
 
 # Close the database connection
-dbDisconnect(jdbcConnection) 
+dbDisconnect(jdbcConnection)
+rm(list=ls())
+gc()

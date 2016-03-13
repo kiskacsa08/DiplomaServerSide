@@ -236,3 +236,5 @@ dbWriteTable(jdbcConnection, "CLEANEDDATA", df)
 dbDisconnect(jdbcConnection) 
 
 # write.csv(df, "./cleaned.csv")
+rm(list=ls())
+gc()
