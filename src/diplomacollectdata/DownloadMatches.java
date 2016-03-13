@@ -12,9 +12,12 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 /**
@@ -107,7 +110,7 @@ public class DownloadMatches {
                     switch (getMatchState(html, actRound, pos)) {
                         case 0:
                             System.out.println("van eredmeny");
-                            matchResult = getResult(html, actRound, pos);
+                            matchResult = getResult(html, homeTeam);
                             break;
                         case 2:
                             System.out.println("live match");
@@ -198,6 +201,30 @@ public class DownloadMatches {
             result = results.get(match-1).text();
         }
         return result;
+    }
+    
+    private static String getResult(String html, int home_team) throws SQLException{
+        Elements matches;
+        Element matchElement;
+        Document doc;
+        doc = Jsoup.parse(html);
+        matches = doc.select("div.event_content");
+        String hteam = getTeamName(home_team);
+        int i = 0;
+        int pos = 0;
+        for (Element match : matches) {
+            Elements homeElement = match.select("div.col2");
+            if (homeElement.text().equals(hteam)) {
+                pos = i;
+            }
+            i++;
+        }
+        matchElement = matches.get(pos);
+        String result = matchElement.select("div.col_result").text();
+        if (!result.equals("")) {
+            return result;
+        }
+        return "N/A";
     }
     
     //html-ből egy adott meccs hazai csapatának kinyerése (majd a csapat ID-jének visszaadása)
