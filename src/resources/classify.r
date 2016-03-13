@@ -9,7 +9,7 @@ library(randomForest)
 # Load the database driver
 jdbcDriver <- JDBC(driverClass = "org.apache.derby.jdbc.ClientDriver", classPath = "./derbyclient.jar")
 # Connect to database
-jdbcConnection <- dbConnect(jdbcDriver, "jdbc:derby://localhost:1527/DiplomaOddsDatabase", "diploma", "diploma")
+jdbcConnection <- dbConnect(jdbcDriver, "jdbc:derby://localhost:1527/DiplomaOddsDatabase", "kiskacsa08", "kiskacsa")
 # Read data
 data <- dbReadTable(jdbcConnection, "CLEANEDDATA")
 latestPred <- dbReadTable(jdbcConnection, "PREDICTIONS")
@@ -60,7 +60,7 @@ predicted <- predicted[,"MATCH_ID"]
 predicted <- unique(predicted)
 matches <- subset(matches, ID %in% predicted)
 matches <- matches[order(matches$MATCH_DATE),]
-matches <- tail(matches, 10)
+#matches <- tail(matches, 10)
 matches <- matches[,"ID"]
 latestPred <- subset(latestPred, MATCH_ID %in% matches)
 
