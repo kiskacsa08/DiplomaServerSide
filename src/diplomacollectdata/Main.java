@@ -1,21 +1,13 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package diplomacollectdata;
 
-import java.awt.event.ActionEvent;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-import javax.swing.Timer;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  *
@@ -24,8 +16,6 @@ import javax.swing.Timer;
 public class Main {
     private static Timer oddsTimer;
     private static Timer matchTimer;
-    private static ScriptEngineManager manager;
-    private static ScriptEngine engine;
     
     public static void main(String args[]){
         if (args.length != 2) {
@@ -47,37 +37,37 @@ public class Main {
         
         int oddsFreq = Integer.parseInt(oddsFreqString)*60*1000;
         int matchesFreq = Integer.parseInt(matchesFreqString)*60*1000;
-        manager = new ScriptEngineManager();
-        engine = manager.getEngineByExtension("R");
-        matchTimer = new Timer(matchesFreq, (ActionEvent e) -> {
-            try {
-                DownloadMatches.startDownload();
-            } catch (SQLException | IOException | ParseException ex) {
-                Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        System.out.println(oddsFreq);
+        System.out.println(matchesFreq);
+        matchTimer = new Timer();
+        matchTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    System.out.println("Matches");
+                    DownloadMatches.startDownload();
+                } catch (SQLException | IOException | ParseException ex) {
+                    Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
-        });
-        matchTimer.setInitialDelay(0);
-        System.out.println("Első");
-        oddsTimer = new Timer(oddsFreq, (ActionEvent e) -> {
-            try {
-                DownloadOdds odds = new DownloadOdds();
-                System.out.println("odds");
-                Classification.Clean(engine);
-                System.out.println("cleaned");
-                Classification.Classify(engine);
-                System.out.println("classified");
-            } catch (ScriptException ex) {
-                Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (URISyntaxException | IOException ex) {
-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }, new Date(), matchesFreq);
+        oddsTimer = new Timer();
+        oddsTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    System.out.println("odds");
+                    DownloadOdds odds = new DownloadOdds();
+                    Classification.Clean();
+                    System.out.println("cleaned");
+                    Classification.Classify();
+                    System.out.println("classified");
+                    System.gc();
+                } catch (IOException | InterruptedException ex) {
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
-        });
-        oddsTimer.setInitialDelay(0);
-        System.out.println("Második");
-        
-        matchTimer.start();
-//        oddsTimer.start();
-        System.out.println("Harmadik");
+        }, new Date(), oddsFreq);
     }
     
     private static boolean isValidArgument(String s){

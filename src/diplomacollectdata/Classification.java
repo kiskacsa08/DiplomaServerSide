@@ -6,41 +6,20 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URISyntaxException;
 import java.net.URL;
-import javax.script.ScriptEngine;
-import javax.script.ScriptException;
 
 /**
  *
  * @author Attila
  */
-public class Classification {  
-//    private static Rengine re;
+public class Classification {
     
-//    public static void startR(){
-//        re = new Rengine(new String[] {"--vanilla"}, false, null);
-//    }
-//    
-//    public static void stopR(){
-//        re.end();
-//    }
-    private static ClassLoader classLoader;
-    
-    public static void Clean(ScriptEngine engine) throws ScriptException, URISyntaxException, IOException {
-//        Rengine re = new Rengine(new String[] {"--vanilla"}, false, null);
-//        if (!re.waitForR())
-//        {
-//          System.out.println ("Cannot load R");
-//          return;
-//        }
-//        re.eval("source('datacleaner.r')");
-//        re.end();
+    public static void Clean() throws IOException, InterruptedException {
         String res = "/resources/datacleaner.r";
         File file = null;
         String path;
         URL resource = Classification.class.getResource(res);
-        
+
         if (resource.toString().startsWith("jar:")) {
             InputStream input = Classification.class.getResourceAsStream(res);
             file = File.createTempFile("datacleaner", ".r");
@@ -52,29 +31,28 @@ public class Classification {
             }
             file.deleteOnExit();
             path = file.getAbsolutePath();
+            input = null;
+            out = null;
         }
         else {
             path = resource.getPath();
         }
-        
         System.out.println("Path: " + path);
-        engine.eval("source('" + path + "')");
+        
+        ProcessBuilder pb = new ProcessBuilder("Rscript", path);
+        pb.inheritIO();
+        
+        Process p = pb.start();
+        p.waitFor();
+        p.destroy();
+        System.gc();
     }
     
-    public static void Classify(ScriptEngine engine) throws ScriptException, URISyntaxException, IOException{
-//        Rengine re2 = new Rengine(new String[] {"--vanilla"}, false, null);
-//        if (!re.waitForR())
-//        {
-//          System.out.println ("Cannot load R");
-//          return;
-//        }
-//        re.eval("source('classify.r')");
-//        re.end();
+    public static void Classify() throws IOException, InterruptedException {
         String res = "/resources/classify.r";
         File file = null;
         String path;
         URL resource = Classification.class.getResource(res);
-        
         if (resource.toString().startsWith("jar:")) {
             InputStream input = Classification.class.getResourceAsStream(res);
             file = File.createTempFile("classify", ".r");
@@ -86,12 +64,19 @@ public class Classification {
             }
             file.deleteOnExit();
             path = file.getAbsolutePath();
+            input = null;
+            out = null;
         }
         else {
             path = resource.getPath();
         }
-        engine.eval("source('" + path + "')");
-//        System.out.println(engine.eval("source('test.r')"));
-//        engine.eval("source('test.r')");
+        System.out.println("Path: " + path);
+        ProcessBuilder pb = new ProcessBuilder("Rscript", path);
+        pb.inheritIO();
+        
+        Process p = pb.start();
+        p.waitFor();
+        p.destroy();
+        System.gc();
     }
 }

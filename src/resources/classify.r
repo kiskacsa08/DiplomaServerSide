@@ -9,7 +9,7 @@ library(randomForest)
 # Load the database driver
 jdbcDriver <- JDBC(driverClass = "org.apache.derby.jdbc.ClientDriver", classPath = "./derbyclient.jar")
 # Connect to database
-jdbcConnection <- dbConnect(jdbcDriver, "jdbc:derby://localhost:1527/DiplomaOddsDatabase", "diploma", "diploma")
+jdbcConnection <- dbConnect(jdbcDriver, "jdbc:derby://109.110.143.103:1527//home/server/.netbeans-derby/DiplomaOddsDatabase", "diploma", "diploma")
 # Read data
 data <- dbReadTable(jdbcConnection, "CLEANEDDATA")
 latestPred <- dbReadTable(jdbcConnection, "PREDICTIONS")
@@ -298,3 +298,4 @@ dbWriteTable(jdbcConnection, "PREDICTIONS", df)
 dbDisconnect(jdbcConnection)
 rm(list=ls())
 gc()
+q("no")
