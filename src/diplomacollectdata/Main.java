@@ -17,7 +17,7 @@ public class Main {
     private static Timer oddsTimer;
     private static Timer matchTimer;
     
-    public static void main(String args[]){
+    public static void main(String args[]) {
         if (args.length != 2) {
             System.out.println("This can be run with two parameters:");
             System.out.println("1: Odds and classification download frequency");
@@ -34,7 +34,6 @@ public class Main {
             System.out.println("Download frequencies are in minutes and at least 30 and at most 1440 (one day)");
             return;
         }
-        
         int oddsFreq = Integer.parseInt(oddsFreqString)*60*1000;
         int matchesFreq = Integer.parseInt(matchesFreqString)*60*1000;
         System.out.println(oddsFreq);

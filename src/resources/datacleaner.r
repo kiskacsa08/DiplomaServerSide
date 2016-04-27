@@ -80,7 +80,7 @@ print('init')
 jdbcDriver <- JDBC(driverClass = "org.apache.derby.jdbc.ClientDriver", classPath = "./derbyclient.jar")
 print('driver loaded')
 # Connect to database
-jdbcConnection <- dbConnect(jdbcDriver, "jdbc:derby://109.110.143.103:1527//home/server/.netbeans-derby/DiplomaOddsDatabase", "diploma", "diploma")
+jdbcConnection <- dbConnect(jdbcDriver, "jdbc:derby://localhost:1527//home/server/.netbeans-derby/DiplomaOddsDatabase", "diploma", "diploma")
 print('connected')
 # Read odds data
 odds <- dbReadTable(jdbcConnection, "ODDS")
